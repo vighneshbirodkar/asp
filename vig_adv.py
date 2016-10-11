@@ -1,7 +1,6 @@
 import socket
 import sys
 import networkx as nx
-from termcolor import cprint
 import numpy as np
 
 np.set_printoptions(precision=2)
@@ -36,8 +35,8 @@ lines = data.split('\n')
 start = int(lines[0].split()[-1])
 end = int(lines[1].split()[-1])
 
-cprint('Start = %d' % start, 'cyan')
-cprint('End = %d' % end, 'cyan')
+print('Start = %d' % start)
+print('End = %d' % end)
 
 edges = lines[3:]
 edges = [e for e in edges if len(e) > 1]
@@ -46,8 +45,8 @@ graph = nx.Graph()
 graph.add_node(10000)
 
 graph.add_weighted_edges_from(edges)
-cprint('Graph Nodes = %d' % graph.number_of_nodes(), 'cyan')
-cprint('Graph Edges = %d' % graph.number_of_edges(), 'cyan')
+print('Graph Nodes = %d' % graph.number_of_nodes())
+print('Graph Edges = %d' % graph.number_of_edges())
 
 recv_data = ''
 player_pos = start
@@ -59,10 +58,10 @@ while '$' not in recv_data:
         break
 
     player_pos = int(recv_data)
-    cprint('Player Position = %d' % player_pos, 'red')
+    print('Player Position = %d' % player_pos)
 
     nbrs = graph.neighbors(end)
-    cprint('Neighbors of target = %r' % nbrs, 'cyan')
+    print('Neighbors of target = %r' % nbrs)
     nbr_weights = np.zeros(len(nbrs), dtype=np.float)
 
     for (i, nbr) in enumerate(nbrs):
@@ -78,11 +77,11 @@ while '$' not in recv_data:
 
     nbr_weights = nbr_weights/nbr_weights.sum()
     chosen_nbr = np.random.choice(nbrs, p=nbr_weights)
-    cprint('Neighbour Weights = %s' % str(nbr_weights), 'cyan')
+    print('Neighbour Weights = %s' % str(nbr_weights))
     nbr_weights = softmax(nbr_weights, softmax_weight)
-    cprint('Annealed Weights = %s' % str(nbr_weights), 'cyan')
-    cprint('Chosen Neighbour = %d' % chosen_nbr, 'green')
-    cprint('Doubling Edge (%d %d)' % (chosen_nbr, end), 'green')
+    print('Annealed Weights = %s' % str(nbr_weights))
+    print('Chosen Neighbour = %d' % chosen_nbr)
+    print('Doubling Edge (%d %d)' % (chosen_nbr, end))
 
     sock.sendall('%d %d\n' % (chosen_nbr, end))
     softmax_weight += 1.0

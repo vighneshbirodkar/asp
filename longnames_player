@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+module load python-2.7
+
+python asp_pf.py $1
