@@ -38,6 +38,10 @@ def get_most_unique_path(paths):
 
     candidates = path_penultimate_map[penultimate]
 
+    # Don't go deeper if the candidate length is two
+    if len(candidates[0]) == 2:
+        return candidates[0][1]
+
     return get_most_unique_path([candidate[:-1] for candidate in candidates])
 
 def get_path(graph, start, end):
