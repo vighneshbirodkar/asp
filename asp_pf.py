@@ -1,7 +1,8 @@
 """
 Path finder for adverserial shortest path
 """
-
+import socket
+import sys
 import networkx as nx
 
 def get_most_unique_path(paths):
@@ -45,7 +46,27 @@ def get_path(graph, start, end):
     paths = nx.algorithms.all_shortest_paths(graph, start, end, weight='weight')
     return get_most_unique_path([path for path in paths])[1]
 
-lines = [line.rstrip('\n') for line in open('advshort.txt')]
+
+HOST = 'localhost'
+PORT = 5000
+
+
+if len(sys.argv) > 1:
+    PORT = int(sys.argv[1])
+
+sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+sock.connect((HOST, PORT))
+
+recv_data = ''
+data = ''
+
+while '#' not in recv_data:
+    recv_data = sock.recv(1024)
+    data += recv_data
+
+lines = data.split('\n')
+
+# lines = [line.rstrip('\n') for line in open('advshort.txt')]
 
 # Lines 0, 1, 2 are are not edges
 start = int(lines[0].split(':')[1])
@@ -61,4 +82,32 @@ graph = nx.Graph()
 graph.add_node(10000)
 graph.add_weighted_edges_from(edges)
 
-print get_path(graph, start, end)
+# Communicate via socket
+recv_data = ''
+player_pos = start
+
+while '$' not in recv_data:
+
+    # Send our move
+    move = get_path(graph, player_pos, end)
+
+    print("Moving from", player_pos, "to", move)
+
+    sock.sendall('%d\n' % (move))
+
+    # Update our position
+    player_pos = move
+
+    recv_data = sock.recv(1024)
+    if '$' in recv_data:
+        break
+
+    # Read edge doubled by the adversary
+    n1, n2, weight = [int(x) for x in recv_data.split(' ')]
+
+    print("Adversary has set edge (", n1, "->", n2, ") as", weight)
+
+    # Update graph
+    graph[n1][n2]['weight'] = weight
+    graph[n2][n1]['weight'] = weight
+
