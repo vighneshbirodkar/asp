@@ -11,6 +11,13 @@ HOST = 'localhost'
 PORT = 5000
 
 
+def softmax(x, w):
+    x = x*w
+    x = np.exp(x)
+    x = x/x.sum()
+    return x
+
+
 if len(sys.argv) > 1:
     PORT = int(sys.argv[1])
 
@@ -44,6 +51,7 @@ cprint('Graph Edges = %d' % graph.number_of_edges(), 'cyan')
 
 recv_data = ''
 player_pos = start
+softmax_weight = 1.0
 
 while '$' not in recv_data:
     recv_data = sock.recv(1024)
@@ -71,9 +79,12 @@ while '$' not in recv_data:
     nbr_weights = nbr_weights/nbr_weights.sum()
     chosen_nbr = np.random.choice(nbrs, p=nbr_weights)
     cprint('Neighbour Weights = %s' % str(nbr_weights), 'cyan')
+    nbr_weights = softmax(nbr_weights, softmax_weight)
+    cprint('Annealed Weights = %s' % str(nbr_weights), 'cyan')
     cprint('Chosen Neighbour = %d' % chosen_nbr, 'green')
     cprint('Doubling Edge (%d %d)' % (chosen_nbr, end), 'green')
 
     sock.sendall('%d %d\n' % (chosen_nbr, end))
+    softmax_weight += 1.0
 
 sock.close()
