@@ -4,7 +4,7 @@ import networkx as nx
 from termcolor import cprint
 import numpy as np
 
-np.set_printoptions(precision=3)
+np.set_printoptions(precision=2)
 
 
 HOST = 'localhost'
@@ -65,8 +65,7 @@ while '$' not in recv_data:
             l = np.inf
 
         l = float(l)
-        l = np.max(l, 0.001)
-        print('l = ', l)
+        l = max(l, 0.001)
         nbr_weights[i] = 1.0/l
 
     nbr_weights = nbr_weights/nbr_weights.sum()
@@ -76,3 +75,5 @@ while '$' not in recv_data:
     cprint('Doubling Edge (%d %d)' % (chosen_nbr, end), 'green')
 
     sock.sendall('%d %d\n' % (chosen_nbr, end))
+
+sock.close()
