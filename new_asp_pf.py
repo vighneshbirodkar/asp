@@ -36,7 +36,7 @@ def get_best_next_node(candidate, weights, memo):
         # Recurse
         value = w[1] + get_best_next_node(candidate[1:], w, memo)
 
-        if value < min_value:
+        if value > min_value:
             min_value = value
 
     # Memoize
