@@ -111,7 +111,10 @@ while '$' not in recv_data:
 
     print("Adversary has set edge (", n1, "->", n2, ") as", weight)
 
-    # Update graph
-    graph[n1][n2]['weight'] = weight
-    graph[n2][n1]['weight'] = weight
+    if n1 == -1 or n2 == -1:
+        print("Ignoring adversary's move")
+    else:
+        # Update graph
+        graph[n1][n2]['weight'] = weight
+        graph[n2][n1]['weight'] = weight
 
