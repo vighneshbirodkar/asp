@@ -27,7 +27,7 @@ recv_data = ''
 data = ''
 
 while '#' not in recv_data:
-    recv_data = sock.recv(1024)
+    recv_data = sock.recv(65536)
     data += recv_data
 
 lines = data.split('\n')

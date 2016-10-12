@@ -102,7 +102,7 @@ while '$' not in recv_data:
     # Update our position
     player_pos = move
 
-    recv_data = sock.recv(1024)
+    recv_data = sock.recv(65536)
     if '$' in recv_data:
         break
 
