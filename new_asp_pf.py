@@ -44,7 +44,6 @@ def get_best_next_node(candidate, weights, memo):
 
     return min_value
 
-
 def get_most_unique_path(paths):
 
     if len(paths) == 1:
@@ -78,10 +77,6 @@ def get_most_unique_path(paths):
 
     candidates = path_penultimate_map[penultimate]
 
-    # Don't go deeper if the candidate length is two
-    if len(candidates[0]) == 2:
-        return candidates[0][1]
-
     return get_most_unique_path([candidate[:-1] for candidate in candidates])
 
 def get_path(graph, start, end):
@@ -95,26 +90,32 @@ def get_path(graph, start, end):
     for path in paths:
         computations += len(path) ** len(path)
 
-    if computations < computation_limit:
-        print('Computations required: ', computations, ' is less than', computation_limit)
-        min_cost = 1e10
-        next_best = paths[0][1]
-        for path in paths:
-            # Construct weights
-            weights = []
-            weights.append(0)
-            for i in range(1, len(path)):
-                 weights.append(graph[path[ i - 1]][path[ i ]]['weight'])
+    try:
+        if computations < computation_limit:
+            print('Computations required: ', computations, ' is less than', computation_limit)
+            min_cost = 1e10
+            next_best = paths[0][1]
+            for path in paths:
+                # Construct weights
+                weights = []
+                weights.append(0)
+                for i in range(1, len(path)):
+                     weights.append(graph[path[ i - 1]][path[ i ]]['weight'])
 
-            # Get min cost of this path
-            cost = get_best_next_node([node for node in path], weights, {})
-            if cost < min_cost:
-                min_cost = cost
-                next_best = path[1]
-        
-        return next_best
-    else:
-        return get_most_unique_path([path for path in paths])[1]
+                # Get min cost of this path
+                cost = get_best_next_node([node for node in path], weights, {})
+                if cost < min_cost:
+                    min_cost = cost
+                    next_best = path[1]
+            
+            return next_best
+        else:
+            unique_path = get_most_unique_path(paths)
+            if len(unique_path) <= 1:
+                return unique_path[0]
+            return unique_path[1]
+    except:
+        return paths[0][1]
 
 HOST = 'localhost'
 PORT = 5000
